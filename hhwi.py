@@ -1,35 +1,45 @@
 import streamlit as st
-from PIL import Image
 import os
+from PIL import Image
 
-# Create a directory to save uploaded images
-if not os.path.exists('uploaded_images'):
-    os.makedirs('uploaded_images')
+# Set the directory to store uploaded images
+UPLOAD_FOLDER = 'uploaded_images'
 
-# Function to save uploaded image
-def save_uploaded_file(uploaded_file):
-    with open(os.path.join('uploaded_images', uploaded_file.name), 'wb') as f:
-        f.write(uploaded_file.getbuffer())
+# Create the folder if it doesn't exist
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
 
-# Initialize session state for uploaded images
-if 'uploaded_images' not in st.session_state:
-    st.session_state.uploaded_images = []
 
-# Title of the app
-st.title("Image Upload and Display")
+# Function to display images with delete option
+def display_images():
+    images = os.listdir(UPLOAD_FOLDER)
+    if images:
+        st.subheader("Uploaded Images")
+        for image in images:
+            img = Image.open(os.path.join(UPLOAD_FOLDER, image))
+            st.image(img, caption=image, use_column_width=True)
 
-# File uploader
-uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+            # Add a button to delete each image
+            if st.button(f"Delete {image}", key=image):
+                os.remove(os.path.join(UPLOAD_FOLDER, image))
+                st.success(f"Image {image} deleted successfully!")
+                st.experimental_rerun()  # Refresh the app to update the display
+    else:
+        st.write("No images uploaded yet.")
+
+
+# Streamlit application UI
+st.title("नैतिक्ता नियतिश्चैव भ्रम एव हि केवलम्। शून्यं सत्यं परं तत्त्वं तत्र नास्ति शुभाशुभम्|| Binod ka message niche hai koi or button par click na kare")
+
+# Uploading the image
+uploaded_file = st.file_uploader("yha na click karo", type=["png", "jpg", "jpeg", "gif"])
 
 if uploaded_file is not None:
-    # Save the uploaded image
-    save_uploaded_file(uploaded_file)
-    st.session_state.uploaded_images.append(uploaded_file.name)  # Store image name in session state
-    st.success("Image uploaded successfully!")
+    # Save the uploaded file
+    file_path = os.path.join(UPLOAD_FOLDER, uploaded_file.name)
+    with open(file_path, "wb") as f:
+        f.write(uploaded_file.getbuffer())
+    st.success(f"Image {uploaded_file.name} uploaded successfully!")
 
-# Display all uploaded images
-st.subheader("Uploaded Images")
-for img_file in st.session_state.uploaded_images:
-    img_path = os.path.join('uploaded_images', img_file)
-    image = Image.open(img_path)
-    st.image(image, caption=img_file, use_column_width=True)
+# Display the uploaded images with delete options
+display_images()
