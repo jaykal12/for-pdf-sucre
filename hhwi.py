@@ -14,7 +14,7 @@ if not os.path.exists(UPLOAD_FOLDER):
 def display_images():
     images = os.listdir(UPLOAD_FOLDER)
     if images:
-        st.subheader("Uploaded Images")
+        st.subheader("Binod ka message hai ")
         for image in images:
             img = Image.open(os.path.join(UPLOAD_FOLDER, image))
             st.image(img, caption=image, use_column_width=True)
